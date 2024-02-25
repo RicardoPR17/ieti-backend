@@ -170,11 +170,28 @@ const deleteProvider = async (req, res) => {
         if (!delete_provider) {
             res.status(404).send({ message: "Provider doesn´t exists." });
         } else {
-            res.status(204).send();
+            res.status(204).send({ message: "Provider deleted successfully." });
         }
     } catch (error) {
         res.json({ error: error.message });
     }
 };
 
-module.exports = { getAllProviders, createProvider, getProvider, getMedicineProvider, updateMedicineProvider, addMedicine, deleteProvider };
+const deleteMedicine = async (req, res) => {
+    const { pharmacy, medicine } = req.params;
+    try {
+        const pharmacy_reg = new RegExp(`${pharmacy}`, 'i');
+        const medicine_reg = new RegExp(`${medicine}`, 'i');
+        const delete_medicine = await providers.updateOne({ pharmacy: pharmacy_reg }, { $pull: { medicines: { medicine_name: medicine_reg } } });
+        while (!delete_medicine) { }
+        if (delete_medicine.modifiedCount === 0) {
+            res.status(404).send({ message: "Medicine doesn´t exists." });
+        } else {
+            res.status(204).send({ message: "Medicine deleted successfully." });
+        }
+    } catch (error) {
+        res.json({ error: error.message });
+    }
+}
+
+module.exports = { getAllProviders, createProvider, getProvider, getMedicineProvider, updateMedicineProvider, addMedicine, deleteProvider, deleteMedicine };
