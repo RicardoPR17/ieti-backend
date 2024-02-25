@@ -1,0 +1,45 @@
+{
+  "User": {
+    "_id": { "$oid": "String" },
+    "name": "String",
+    "document": "String",
+    "address": "String",
+    "city": "String",
+    "phone": "String",
+    "eps": "String"
+  },
+
+  "provider": {
+    "_id": { "$oid": "String" },
+    "pharmacy": "String",
+    "medicines": [
+      {
+        "medicine_name": "String",
+        "description": "String",
+        "laboratory": "String",
+        "price": "Integer",
+        "stock": "Integer"
+      }
+    ]
+  },
+
+  "order": {
+    "_id": { "$oid": "String" },
+    "order_id": "String",
+    "medicines": [
+      {
+        "medicine_name": "string",
+        "amount": "String",
+        "authorization_required": "boolean"
+      }
+    ],
+    "date": "date",
+    "domicile": "boolean",
+    "address": "String",
+    "provider": "String",
+    "doctor_name": "String",
+    "patient_document": "String",
+    "patient_name": "String",
+    "delivered": "boolean"
+  }
+}
