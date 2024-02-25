@@ -36,16 +36,23 @@ const createProvider = async (req, res) => {
             throw new Error("Invalid data to create provider");
         }
 
-        let pharmacy = {
-            medicines: reqData.medicines,
-            pharmacy: reqData.pharmacy
-        };
+        const name = new RegExp(`${reqData.pharmacy}`, 'i');
+        const providers_name = await providers.find({ pharmacy : name }).toArray();
+        while (!providers_name) { }
 
-        const new_provider = await providers.insertOne(pharmacy);
+        if (providers_name.length == 0) {
+            let pharmacy = {
+                medicines: reqData.medicines,
+                pharmacy: reqData.pharmacy
+            };
 
-        while(!new_provider){}
+            const new_provider = await providers.insertOne(pharmacy);
+            while (!new_provider) { }
 
-        res.status(201).send({ message: "Provider created successfully!" });
+            res.status(201).send({ message: "Provider created successfully!" });
+        } else {
+            res.status(403).send({ message: "Provider already exists!" });
+        }
     } catch (err) {
         res.json({ error: err.message });
     }
@@ -54,10 +61,10 @@ const createProvider = async (req, res) => {
 const getProvider = async (req, res) => {
     try {
         const reqData = req.params.namePharmacy;
-        const pharmacy = new RegExp(`${reqData}`,'i');
-        const query = await providers.find({pharmacy: pharmacy}).project({_id: 0}).toArray();
+        const pharmacy = new RegExp(`${reqData}`, 'i');
+        const query = await providers.find({ pharmacy: pharmacy }).project({ _id: 0 }).toArray();
 
-        if(query.length===0){
+        if (query.length === 0) {
             res.status(404);
             throw new Error("Pharmacy not found");
         }
@@ -72,10 +79,10 @@ const getProvider = async (req, res) => {
 const getMedicineProvider = async (req, res) => {
     try {
         const reqData = req.params.medicine;
-        const medicine = new RegExp(`${reqData}`,'i');
-        const query = await providers.find({'medicines.medicine_name':medicine}).project({_id: 0, pharmacy: 1, 'medicines.$': 1}).toArray();
+        const medicine = new RegExp(`${reqData}`, 'i');
+        const query = await providers.find({ 'medicines.medicine_name': medicine }).project({ _id: 0, pharmacy: 1, 'medicines.$': 1 }).toArray();
 
-        if(query.length===0){
+        if (query.length === 0) {
             res.status(404);
             throw new Error("Medicine not found");
         }
@@ -86,4 +93,6 @@ const getMedicineProvider = async (req, res) => {
     }
 };
 
-module.exports = {getAllProviders, createProvider, getProvider, getMedicineProvider};
+
+
+module.exports = { getAllProviders, createProvider, getProvider, getMedicineProvider };
