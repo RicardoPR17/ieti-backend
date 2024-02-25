@@ -11,3 +11,5 @@
 | Juan Francisco Terán Roman  |
 | Laura Nathalia Garcia Acuña |
 |   Ricardo Pulido Rentería   |
+
+**Nota:** Para ejecutar, usar comando `npm start`
