@@ -12,4 +12,7 @@ router.get("/db/providers/medicine/:medicine", providers.getMedicineProvider);
 // Rutas POST:
 router.post("/db/providers/new", providers.createProvider);
 
+// Rutas PUT:
+router.put("/db/providers/update", providers.updateMedicineProvider);
+
 module.exports = { router };
