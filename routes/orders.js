@@ -9,6 +9,6 @@ router.get("/db/orders", orders.getAllOrders);
 router.post("/db/orders/new", orders.createOrder);
 
 // Rutas PUT:
-router.put("/db/orders/:id", orders.deliverOrder);
+router.put("/db/orders/update", orders.deliverOrder);
 
 module.exports = { router };
