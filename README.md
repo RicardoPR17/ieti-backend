@@ -4,7 +4,7 @@
 
 ## EQUIPO
 
-|         **Nombre**          |
+|         **Nombres**          |
 | :-------------------------: |
 | Jessica Daniela Muñoz Ossa  |
 |  José Ricardo Olarte Pardo  |
