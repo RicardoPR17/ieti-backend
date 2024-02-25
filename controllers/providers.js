@@ -37,10 +37,10 @@ const createProvider = async (req, res) => {
         }
 
         const name = new RegExp(`${reqData.pharmacy}`, 'i');
-        const providers_name = await providers.find({ pharmacy : name }).toArray();
+        const providers_name = await providers.find({ pharmacy: name }).toArray();
         while (!providers_name) { }
 
-        if (providers_name.length == 0) {
+        if (providers_name.length === 0) {
             let pharmacy = {
                 medicines: reqData.medicines,
                 pharmacy: reqData.pharmacy
@@ -93,6 +93,35 @@ const getMedicineProvider = async (req, res) => {
     }
 };
 
+const updateMedicineProvider = async (req, res) => {
+    const reqData = req.body;
+    try {
+        if (
+            reqData.length === 0 ||
+            !("pharmacy" in reqData) ||
+            !("medicine_name" in reqData) ||
+            !("laboratory" in reqData) ||
+            !("price" in reqData) ||
+            !("stock" in reqData)
+        ) {
+            res.status(400);
+            throw new Error("Invalid data to update medicine information");
+        } else {
+            const pharmacy = new RegExp(`${reqData.pharmacy}`, 'i');
+            const medicine = new RegExp(`${reqData.medicine}`, 'i');
 
+            const provider_validation = await providers.find({ pharmacy: pharmacy, "medicines.medicine_name": medicine }).toArray();
+            if (provider_validation.lenght === 0) {
+                res.status(404).send({ message: "Pharmacy or medicine doesn´t exists!" });
+            } else {
+                const update = await providers.findOneAndUpdate({ pharmacy: pharmacy, "medicines.medicine_name": medicine }, { $set: { "medicines.laboratory": reqData.laboratory, "medicines.price": reqData.price, "medicines.stock": reqData.stock } });
+                while (!update) { }
+                res.status(200).send({ message: "Medicine updated successfully!" });
+            }
+        }
+    } catch (error) {
+        res.json({ error: error.message });
+    }
+}
 
-module.exports = { getAllProviders, createProvider, getProvider, getMedicineProvider };
+module.exports = { getAllProviders, createProvider, getProvider, getMedicineProvider, updateMedicineProvider };
