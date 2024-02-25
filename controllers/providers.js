@@ -108,13 +108,14 @@ const updateMedicineProvider = async (req, res) => {
             throw new Error("Invalid data to update medicine information");
         } else {
             const pharmacy = new RegExp(`${reqData.pharmacy}`, 'i');
-            const medicine = new RegExp(`${reqData.medicine}`, 'i');
+            const medicine = new RegExp(`${reqData.medicine_name}`, 'i');
 
             const provider_validation = await providers.find({ pharmacy: pharmacy, "medicines.medicine_name": medicine }).toArray();
-            if (provider_validation.lenght === 0) {
+            if (provider_validation.length === 0) {
                 res.status(404).send({ message: "Pharmacy or medicine doesn´t exists!" });
             } else {
-                const update = await providers.findOneAndUpdate({ pharmacy: pharmacy, "medicines.medicine_name": medicine }, { $set: { "medicines.laboratory": reqData.laboratory, "medicines.price": reqData.price, "medicines.stock": reqData.stock } });
+                const updateFields = {"medicines.$.laboratory" : reqData.laboratory, "medicines.$.price" : reqData.price, "medicines.$.stock" : reqData.stock};
+                const update = await providers.findOneAndUpdate({ pharmacy: pharmacy, "medicines.medicine_name": medicine }, { $set: updateFields});
                 while (!update) { }
                 res.status(200).send({ message: "Medicine updated successfully!" });
             }
