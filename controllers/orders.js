@@ -77,10 +77,9 @@ const deliverOrder = async (req, res) => {
       res.status(400);
       throw new Error("Missing order identificator");
     }
-    console.log(reqData.order_id);
+    
     const updateResult = await ordersDoc.findOneAndUpdate({ order_id: reqData.order_id }, { $set: { delivered: true } });
-    console.log(updateResult)
-
+    
     res.status(200).send({ message: "Order updated successfully!" });
   } catch (err) {
     res.json({ error: err.message });
