@@ -14,9 +14,9 @@ app.disable("x-powered-by");
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(cors());
-// app.use("/", userRouter.router);
+app.use("/", userRouter.router);
 app.use("/", ordersRouter.router);
-// app.use("/", providersRouter.router);
+app.use("/", providersRouter.router);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
