@@ -3,7 +3,7 @@ const morgan = require("morgan");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const ordersRouter = require("./routes/orders");
-const providersRouter = require("./routes/providers");
+//const providersRouter = require("./routes/providers");
 
 dotenv.config();
 const app = express();
@@ -13,7 +13,7 @@ app.disable("x-powered-by");
 app.use(morgan("dev"));
 app.use(express.json());
 app.use(cors());
-// app.use("/", userRouter.router);
+app.use("/", userRouter.router);
 app.use("/", ordersRouter.router);
 app.use("/", providersRouter.router);
 
