@@ -2,7 +2,6 @@ const express = require("express");
 const morgan = require("morgan");
 const dotenv = require("dotenv");
 const cors = require("cors");
-const userRouter = require("./routes/users");
 const ordersRouter = require("./routes/orders");
 const providersRouter = require("./routes/providers");
 
@@ -16,7 +15,7 @@ app.use(express.json());
 app.use(cors());
 // app.use("/", userRouter.router);
 app.use("/", ordersRouter.router);
-// app.use("/", providersRouter.router);
+app.use("/", providersRouter.router);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
