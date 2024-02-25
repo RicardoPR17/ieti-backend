@@ -17,4 +17,7 @@ router.put("/db/providers/update", providers.updateMedicineProvider);
 
 router.put("/db/providers/add", providers.addMedicine);
 
+// Rutas DELET
+router.delete("/db/providers/:pharmacy", providers.deleteProvider);
+
 module.exports = { router };

@@ -148,10 +148,10 @@ const addMedicine = async (req, res) => {
                 res.status(403).send({ message: "Medicine already exists!" });
             } else {
                 const new_medicine = { medicine_name: reqData.medicine_name, description: reqData.description, laboratory: reqData.laboratory, price: reqData.price, stock: reqData.stock };
-                const pharmacy_medicines = await providers.find({pharmacy: pharmacy}).toArray();
+                const pharmacy_medicines = await providers.find({ pharmacy: pharmacy }).toArray();
                 const new_medicines = pharmacy_medicines[0].medicines;
                 new_medicines.push(new_medicine);
-                const update_medicines = await providers.findOneAndUpdate({ pharmacy: pharmacy }, { $set: {medicines : new_medicines}});
+                const update_medicines = await providers.findOneAndUpdate({ pharmacy: pharmacy }, { $set: { medicines: new_medicines } });
                 while (!update_medicines) { }
                 res.status(200).send({ message: "Medicine added successfully!" });
             }
@@ -161,4 +161,20 @@ const addMedicine = async (req, res) => {
     }
 };
 
-module.exports = { getAllProviders, createProvider, getProvider, getMedicineProvider, updateMedicineProvider, addMedicine };
+const deleteProvider = async (req, res) => {
+    const reqData = req.params.pharmacy;
+    try {
+        const pharmacy = new RegExp(`${reqData}`, 'i');
+        const delete_provider = await providers.findOneAndDelete({ pharmacy: pharmacy });
+        while (!delete_provider) { }
+        if (!delete_provider) {
+            res.status(404).send({ message: "Provider doesn´t exists." });
+        } else {
+            res.status(204).send();
+        }
+    } catch (error) {
+        res.json({ error: error.message });
+    }
+};
+
+module.exports = { getAllProviders, createProvider, getProvider, getMedicineProvider, updateMedicineProvider, addMedicine, deleteProvider };
