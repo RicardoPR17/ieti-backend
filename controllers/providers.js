@@ -114,8 +114,8 @@ const updateMedicineProvider = async (req, res) => {
             if (provider_validation.length === 0) {
                 res.status(404).send({ message: "Pharmacy or medicine doesn´t exists!" });
             } else {
-                const updateFields = {"medicines.$.laboratory" : reqData.laboratory, "medicines.$.price" : reqData.price, "medicines.$.stock" : reqData.stock};
-                const update = await providers.findOneAndUpdate({ pharmacy: pharmacy, "medicines.medicine_name": medicine }, { $set: updateFields});
+                const updateFields = { "medicines.$.laboratory": reqData.laboratory, "medicines.$.price": reqData.price, "medicines.$.stock": reqData.stock };
+                const update = await providers.findOneAndUpdate({ pharmacy: pharmacy, "medicines.medicine_name": medicine }, { $set: updateFields });
                 while (!update) { }
                 res.status(200).send({ message: "Medicine updated successfully!" });
             }
@@ -123,6 +123,42 @@ const updateMedicineProvider = async (req, res) => {
     } catch (error) {
         res.json({ error: error.message });
     }
-}
+};
 
-module.exports = { getAllProviders, createProvider, getProvider, getMedicineProvider, updateMedicineProvider };
+const addMedicine = async (req, res) => {
+    const reqData = req.body;
+    try {
+        if (
+            reqData.length === 0 ||
+            !("pharmacy" in reqData) ||
+            !("medicine_name" in reqData) ||
+            !("description" in reqData) ||
+            !("laboratory" in reqData) ||
+            !("price" in reqData) ||
+            !("stock" in reqData)
+        ) {
+            res.status(400);
+            throw new Error("Invalid data to add new medicine");
+        } else {
+            const pharmacy = new RegExp(`${reqData.pharmacy}`, 'i');
+            const medicine = new RegExp(`${reqData.medicine_name}`, 'i');
+
+            const provider_validation = await providers.find({ pharmacy: pharmacy, "medicines.medicine_name": medicine }).toArray();
+            if (provider_validation.length !== 0) {
+                res.status(403).send({ message: "Medicine already exists!" });
+            } else {
+                const new_medicine = { medicine_name: reqData.medicine_name, description: reqData.description, laboratory: reqData.laboratory, price: reqData.price, stock: reqData.stock };
+                const pharmacy_medicines = await providers.find({pharmacy: pharmacy}).toArray();
+                const new_medicines = pharmacy_medicines[0].medicines;
+                new_medicines.push(new_medicine);
+                const update_medicines = await providers.findOneAndUpdate({ pharmacy: pharmacy }, { $set: {medicines : new_medicines}});
+                while (!update_medicines) { }
+                res.status(200).send({ message: "Medicine added successfully!" });
+            }
+        }
+    } catch (error) {
+        res.json({ error: error.message });
+    }
+};
+
+module.exports = { getAllProviders, createProvider, getProvider, getMedicineProvider, updateMedicineProvider, addMedicine };

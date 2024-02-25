@@ -15,4 +15,6 @@ router.post("/db/providers/new", providers.createProvider);
 // Rutas PUT:
 router.put("/db/providers/update", providers.updateMedicineProvider);
 
+router.put("/db/providers/add", providers.addMedicine);
+
 module.exports = { router };
