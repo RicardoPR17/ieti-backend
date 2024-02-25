@@ -50,7 +50,7 @@ const createOrder = async (req, res) => {
     while (!order_number) {}
 
     let order = {
-      order_id: order_number,
+      order_id: order_number.toString(),
       medicines: reqData.medicines,
       date: actualDate,
       domicile: reqData.domicile,
@@ -77,7 +77,9 @@ const deliverOrder = async (req, res) => {
       res.status(400);
       throw new Error("Missing order identificator");
     }
-    await ordersDoc.findOneAndUpdate({ order_id: reqData.order_id }, { $set: { delivered: true } });
+    console.log(reqData.order_id);
+    const updateResult = await ordersDoc.findOneAndUpdate({ order_id: reqData.order_id }, { $set: { delivered: true } });
+    console.log(updateResult)
 
     res.status(200).send({ message: "Order updated successfully!" });
   } catch (err) {
