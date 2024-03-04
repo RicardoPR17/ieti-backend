@@ -13,3 +13,7 @@
 |   Ricardo Pulido Rentería   |
 
 **Nota:** Para ejecutar, usar comando `npm start`
+
+### Implementacion del Sprint 1:
+
+https://youtu.be/lYQqcwOVmOU
