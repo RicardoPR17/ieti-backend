@@ -1,6 +1,7 @@
 const { MongoClient } = require("mongodb");
 const dotenv = require("dotenv");
-const { json } = require("express");
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 dotenv.config();
 
 const client = new MongoClient(process.env.MONGO_URI);
@@ -55,15 +56,54 @@ const addUser = async (req, res) => {
       !("eps" in reqData) ||
       !("address" in reqData) ||
       !("city" in reqData) ||
-      !("phone" in reqData)
+      !("phone" in reqData) ||
+      !("password" in reqData)
     ) {
       res.status(400);
       throw new Error("Invalid data to add the user");
     }
 
+    const hashedPassword = await bcrypt.hash(reqData.password, 10);
+
+    reqData.password = hashedPassword;
+
     const newAdded = await usersDoc.insertOne(reqData);
 
     res.status(201).json({ data: newAdded, message: "¡User created successfully!" });
+  } catch (err) {
+    res.json({ error: err.message });
+  }
+};
+
+const loginUser = async (req, res) => {
+  const { document, password } = req.body;
+
+  try {
+    if (!document || !password) {
+      res.status(400);
+      throw new Error("You must send Document and Password.");
+    }
+
+    const user = await usersDoc.findOne({ document: document });
+
+    while(!user) {}
+
+
+    if (!user) {
+      res.status(404);
+      throw new Error("User not found, authentication failed!");
+    }
+
+    const passwordMatch = await bcrypt.compare(password, user.password);
+    if (!passwordMatch) {
+      res.status(401);
+      throw new Error("Wrong password, authentication failed!");
+    }
+
+    const token = jwt.sign({ userId: user._id }, process.env.PRIVATE_KEY, {
+      expiresIn: "1h",
+    });
+    res.status(200).json({ token });
   } catch (err) {
     res.json({ error: err.message });
   }
@@ -95,8 +135,7 @@ const updateUser = async (req, res) => {
         phone: reqData.phone,
       };
       const userFinal = await usersDoc.findOneAndUpdate({ document: reqData.document }, { $set: updateData });
-      while (!userFinal) {
-      }
+      while (!userFinal) {}
       res.status(200).send({ message: "User updated successfully" });
     }
   } catch (err) {
@@ -108,7 +147,7 @@ const deleteUser = async (req, res) => {
   const reqData = req.params.id;
   try {
     const usertoDelete = await usersDoc.findOneAndDelete({ document: reqData });
-    while (!usertoDelete) { }
+    while (!usertoDelete) {}
     if (!usertoDelete) {
       res.status(404).send({ message: "User don't exist" });
     } else {
@@ -117,5 +156,5 @@ const deleteUser = async (req, res) => {
   } catch (err) {
     res.json({ err: err.message });
   }
-}
-module.exports = { getUsers, getAnUser, addUser, updateUser, deleteUser };
+};
+module.exports = { getUsers, getAnUser, addUser, loginUser, updateUser, deleteUser };
