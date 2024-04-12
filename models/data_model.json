@@ -6,7 +6,8 @@
     "address": "String",
     "city": "String",
     "phone": "String",
-    "eps": "String"
+    "eps": "String",
+    "password": "String"
   },
 
   "provider": {
