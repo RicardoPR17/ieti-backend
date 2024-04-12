@@ -13,7 +13,12 @@ const database = client.db("FarmaYa");
 
 const providers = database.collection("Providers");
 
-// The user must be able to see ALL the providers on the platform.
+/**
+ * Función asíncrona para solicitar todos los proveedores almacenados sin el identificador autogenerado por MongoDB
+ *
+ * @param {JSON} req Objeto las propiedades de la petición realizada
+ * @param {JSON} res Objeto que contendrá toda las propiedades de respuesta
+ */
 const getAllProviders = async (req, res) => {
   try {
     const query = await providers.find().project({ _id: 0 }).toArray();
@@ -23,7 +28,12 @@ const getAllProviders = async (req, res) => {
   }
 };
 
-// Create Provider
+/**
+ * Función asíncrona para crear o añadir un proveedor
+ *
+ * @param {JSON} req Objeto las propiedades de la petición realizada
+ * @param {JSON} res Objeto que contendrá toda las propiedades de respuesta
+ */
 const createProvider = async (req, res) => {
   const reqData = req.body;
   try {
@@ -33,7 +43,7 @@ const createProvider = async (req, res) => {
     }
 
     const name = new RegExp(`${reqData.pharmacy}`, "i");
-    const providers_name = await providers.find({ pharmacy: name }).toArray();
+    const providers_name = await providers.find({ pharmacy: { $regex: name } }).toArray();
     while (!providers_name) {}
 
     if (providers_name.length === 0) {
@@ -54,11 +64,20 @@ const createProvider = async (req, res) => {
   }
 };
 
+/**
+ * Función asíncrona para crear obtener un proveedor dado su nombre
+ *
+ * @param {JSON} req Objeto las propiedades de la petición realizada
+ * @param {JSON} res Objeto que contendrá toda las propiedades de respuesta
+ */
 const getProvider = async (req, res) => {
   try {
     const reqData = req.params.namePharmacy;
     const pharmacy = new RegExp(`${reqData}`, "i");
-    const query = await providers.find({ pharmacy: pharmacy }).project({ _id: 0 }).toArray();
+    const query = await providers
+      .find({ pharmacy: { $regex: pharmacy } })
+      .project({ _id: 0 })
+      .toArray();
 
     if (query.length === 0) {
       res.status(404);
@@ -71,12 +90,18 @@ const getProvider = async (req, res) => {
   }
 };
 
+/**
+ * Función asíncrona para consultar qué proveedores tienen un medicamento en su inventario
+ *
+ * @param {JSON} req Objeto las propiedades de la petición realizada
+ * @param {JSON} res Objeto que contendrá toda las propiedades de respuesta
+ */
 const getMedicineProvider = async (req, res) => {
   try {
     const reqData = req.params.medicine;
     const medicine = new RegExp(`${reqData}`, "i");
     const query = await providers
-      .find({ "medicines.medicine_name": medicine })
+      .find({ "medicines.medicine_name": { $regex: medicine } })
       .project({ _id: 0, pharmacy: 1, "medicines.$": 1 })
       .toArray();
 
@@ -91,6 +116,12 @@ const getMedicineProvider = async (req, res) => {
   }
 };
 
+/**
+ * Función asíncrona para actualizar la información de un medicamento para un proveedor
+ *
+ * @param {JSON} req Objeto las propiedades de la petición realizada
+ * @param {JSON} res Objeto que contendrá toda las propiedades de respuesta
+ */
 const updateMedicineProvider = async (req, res) => {
   const reqData = req.body;
   try {
@@ -109,7 +140,7 @@ const updateMedicineProvider = async (req, res) => {
       const medicine = new RegExp(`${reqData.medicine_name}`, "i");
 
       const provider_validation = await providers
-        .find({ pharmacy: pharmacy, "medicines.medicine_name": medicine })
+        .find({ pharmacy: { $regex: pharmacy }, "medicines.medicine_name": { $regex: medicine } })
         .toArray();
       if (provider_validation.length === 0) {
         res.status(404).send({ message: "Pharmacy or medicine doesn´t exists!" });
@@ -132,6 +163,12 @@ const updateMedicineProvider = async (req, res) => {
   }
 };
 
+/**
+ * Función asíncrona para añadir un medicamento al inventario de un proveedor
+ *
+ * @param {JSON} req Objeto las propiedades de la petición realizada
+ * @param {JSON} res Objeto que contendrá toda las propiedades de respuesta
+ */
 const addMedicine = async (req, res) => {
   const reqData = req.body;
   try {
@@ -151,7 +188,7 @@ const addMedicine = async (req, res) => {
       const medicine = new RegExp(`${reqData.medicine_name}`, "i");
 
       const provider_validation = await providers
-        .find({ pharmacy: pharmacy, "medicines.medicine_name": medicine })
+        .find({ pharmacy: { $regex: pharmacy }, "medicines.medicine_name": { $regex: medicine } })
         .toArray();
       if (provider_validation.length !== 0) {
         res.status(403).send({ message: "Medicine already exists!" });
@@ -163,11 +200,11 @@ const addMedicine = async (req, res) => {
           price: reqData.price,
           stock: reqData.stock,
         };
-        const pharmacy_medicines = await providers.find({ pharmacy: pharmacy }).toArray();
+        const pharmacy_medicines = await providers.find({ pharmacy: { $regex: pharmacy } }).toArray();
         const new_medicines = pharmacy_medicines[0].medicines;
         new_medicines.push(new_medicine);
         const update_medicines = await providers.findOneAndUpdate(
-          { pharmacy: pharmacy },
+          { pharmacy: { $regex: pharmacy } },
           { $set: { medicines: new_medicines } }
         );
         while (!update_medicines) {}
@@ -179,6 +216,12 @@ const addMedicine = async (req, res) => {
   }
 };
 
+/**
+ * Función asíncrona para eliminar un proveedor del sistema
+ *
+ * @param {JSON} req Objeto las propiedades de la petición realizada
+ * @param {JSON} res Objeto que contendrá toda las propiedades de respuesta
+ */
 const deleteProvider = async (req, res) => {
   const reqData = req.params.pharmacy;
   try {
@@ -195,6 +238,12 @@ const deleteProvider = async (req, res) => {
   }
 };
 
+/**
+ * Función asíncrona para eliminar un medicamento del inventario de un proveedor el sistema
+ *
+ * @param {JSON} req Objeto las propiedades de la petición realizada
+ * @param {JSON} res Objeto que contendrá toda las propiedades de respuesta
+ */
 const deleteMedicine = async (req, res) => {
   const { pharmacy, medicine } = req.params;
   try {
