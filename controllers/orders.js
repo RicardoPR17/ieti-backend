@@ -14,7 +14,12 @@ const database = client.db("FarmaYa");
 
 const ordersDoc = database.collection("Orders");
 
-// The user must be able to see ALL the orders on the platform.
+/**
+ * Función asíncrona que muestra todos los pedidos 
+ * @param {Json} req Objeto que representa la solicitud http
+ * @param {Json} res Objeto que representa la respuesta con la información solicitada
+ */
+
 const getAllOrders = async (req, res) => {
   try {
     const query = await ordersDoc.find().project({ _id: 0 }).sort({ order_id: 1 }).toArray();
@@ -24,7 +29,11 @@ const getAllOrders = async (req, res) => {
   }
 };
 
-// The user must be able to buy an offer and get the cryptos
+/**
+ * Función asíncrona que permite crear una orden
+ * @param {Json} req Objeto que representa la solicitud http
+ * @param {Json} res Objeto que representa la respuesta con la información solicitada
+ */
 const createOrder = async (req, res) => {
   const reqData = req.body;
   try {
@@ -39,13 +48,14 @@ const createOrder = async (req, res) => {
       throw new Error("Invalid data to create an order");
     }
 
-    // Get the current date and time in Bogotá time zone
+    // Obtener la fecha y hora actual en la zona horaria de Bogotá
     const currentDateInBogota = moment.tz(new Date(), "America/Bogota");
 
-    // Convert to ISO format with UTC offset
+    // Convertir a formato ISO con desfase UTC
     const actualDate = currentDateInBogota.toISOString();
 
-    const order_number = await ordersDoc.countDocuments() + 1; // Get next number for Order ID
+    // Obtener el siguiente número para el ID de pedido
+    const order_number = await ordersDoc.countDocuments() + 1; 
 
     while (!order_number) {}
 
@@ -70,6 +80,11 @@ const createOrder = async (req, res) => {
   }
 };
 
+/**
+ * Función asíncrona que actualiza el estado de la orden como entregada
+ * @param {Json} req Objeto que representa la solicitud http
+ * @param {Json} res Objeto que representa la respuesta con la información solicitada
+ */
 const deliverOrder = async (req, res) => {
   const reqData = req.body;
   try {
