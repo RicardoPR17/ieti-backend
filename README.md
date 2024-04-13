@@ -74,7 +74,7 @@ A continuación se muestran algunos pantallazos donde se muestra la ejecución l
 
 ## Implementacion del Sprint 2:
 
-[Vídeo sprint 2]()
+[Vídeo sprint 2](https://youtu.be/Eo2SuShwPEE)
 
 ## Depliegue en nube
 
