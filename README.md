@@ -70,8 +70,30 @@ A continuación se muestran algunos pantallazos donde se muestra la ejecución l
 
 ## Implementacion del Sprint 1:
 
-https://youtu.be/lYQqcwOVmOU
+[Vídeo sprint 1](https://youtu.be/lYQqcwOVmOU)
 
 ## Implementacion del Sprint 2:
 
+[Vídeo sprint 2]()
 
+## Depliegue en nube
+
+Para la muestra de este segundo sprint, se realiza el despliegue en una instancia de EC2 en AWS. En ella, vamos a descargar Docker
+
+![EC2 docker](<Imágenes README/installDocker.png>)
+
+Y luego, creamos el contenedor con la imagen que subimos a DockerHub
+
+![Crear contenedor](<Imágenes README/EC2contenedor.png>)
+
+Al probar hacer peticiones a la URL dada para el EC2, vemos que las responde de forma adecuada
+
+![login al EC2](<Imágenes README/loginEC2.png>)
+
+Con el JWT que se muestra en la imagen anterior, hacemos una petición que la requiera para ver la respuesta correcta
+
+![EC2 uso JWT](<Imágenes README/ejemploJWT_EC2.png>)
+
+Si enviamos las peticiones con el JWT vacío o sin el encabezado de autorización, no nos permite realizar la petición
+
+![No JWT](<Imágenes README/noJWTEC2.png>)
