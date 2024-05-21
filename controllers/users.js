@@ -15,6 +15,11 @@ const database = client.db("FarmaYa");
 
 const usersDoc = database.collection("Users");
 
+/**
+ * Función asíncrona para obtener todos los usuarios
+ * @param {json} req solicitud HTTP
+ * @param {json} res respuesta HTTP
+ */
 const getUsers = async (req, res) => {
   try {
     const result = await usersDoc.find({}).project({ _id: 0 }).toArray();
@@ -24,12 +29,17 @@ const getUsers = async (req, res) => {
   }
 };
 
+/**
+ * Función asíncrona para obtener un usuario dado su documento
+ * @param {json} req solicitud HTTP
+ * @param {json} res respuesta HTTP
+ */
 const getAnUser = async (req, res) => {
   const docToSearch = req.params.document;
   try {
     if (!docToSearch) {
       res.status(400);
-      throw new Error("Send a document number to search for the user."); // email¿? tipoDoc ¿? ¿phone?
+      throw new Error("Send a document number to search for the user.");
     }
 
     const user = await usersDoc.find({ document: docToSearch }).project({ _id: 0 }).toArray();
@@ -45,6 +55,11 @@ const getAnUser = async (req, res) => {
   }
 };
 
+/**
+ * Función asíncrona para crear un usuario
+ * @param {json} req solicitud HTTP
+ * @param {json} res respuesta HTTP
+ */
 const addUser = async (req, res) => {
   try {
     const reqData = req.body;
@@ -75,6 +90,12 @@ const addUser = async (req, res) => {
   }
 };
 
+/**
+ * Función asíncrona para hacer el inicio de sesión de un usuario con su documento y contraseña
+ * Si el inicio de sesión se realiza con éxito, el JSON de la respuesta contendrá el token jwt generado
+ * @param {json} req solicitud HTTP
+ * @param {json} res respuesta HTTP
+ */
 const loginUser = async (req, res) => {
   const { document, password } = req.body;
 
@@ -109,6 +130,11 @@ const loginUser = async (req, res) => {
   }
 };
 
+/**
+ * Función asíncrona para actualizar los datos de un usuario
+ * @param {json} req solicitud HTTP
+ * @param {json} res respuesta HTTP
+ */
 const updateUser = async (req, res) => {
   const reqData = req.body;
   try {
@@ -143,6 +169,11 @@ const updateUser = async (req, res) => {
   }
 };
 
+/**
+ * Función asíncrona para eliminar un usuario
+ * @param {json} req solicitud HTTP
+ * @param {json} res respuesta HTTP 
+ */
 const deleteUser = async (req, res) => {
   const reqData = req.params.id;
   try {
