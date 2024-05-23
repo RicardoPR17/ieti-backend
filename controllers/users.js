@@ -72,7 +72,8 @@ const addUser = async (req, res) => {
       !("address" in reqData) ||
       !("city" in reqData) ||
       !("phone" in reqData) ||
-      !("password" in reqData)
+      !("password" in reqData) ||
+      !("role" in reqData)
     ) {
       res.status(400);
       throw new Error("Invalid data to add the user");
